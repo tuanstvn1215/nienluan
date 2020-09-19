@@ -5,9 +5,8 @@ public class Dathuc {
    int length;
 
    public Dathuc() {
-      length = 1;
-      dsDonthuc = new Donthuc[1];
-      dsDonthuc[0] = new Donthuc();
+      length = 0;
+      dsDonthuc = new Donthuc[0];
    }
 
    public Dathuc(Dathuc dathuc) {
@@ -94,110 +93,109 @@ public class Dathuc {
 
    // Trả về 1 đa thức đã thu gọn
    public Dathuc thugonDathuc() {
-
       Dathuc dathuc1 = new Dathuc(this);
       // sắp xếp lại
-      System.out.println(dathuc1.toString());
       dathuc1 = dathuc1.sapxepDathuc();
-      System.out.println(dathuc1.toString());
       // xử lí thu gọn
       Dathuc dathuc = new Dathuc();
-      int mu, mu1, mu2;
-      float so;
-      Donthuc donthuc;
+      Donthuc donthuc = new Donthuc();
       int i = 0;
-      // vì ô đầu tiên là (0.0) nên sửa ô đầu trong kết quả thành ô đầu của đa thức đã
-      // thu gọn
-
-      System.out.println(dathuc1.layDonthuc(0).layMu());
-      System.out.println(dathuc1.layDonthuc(0).laySo());
-      mu = dathuc1.layDonthuc(0).layMu();
-      so = dathuc1.layDonthuc(0).laySo();
-      donthuc = new Donthuc(so, mu);
-      dathuc.suaDonthuc(0, donthuc);
-      while (i < dathuc1.length - 1) {
-         mu1 = dathuc1.layDonthuc(i).layMu();
-         mu2 = dathuc1.layDonthuc(i + 1).layMu();
-         if (mu1 == mu2) {
-            so = donthuc.laySo() + dathuc1.layDonthuc(i + 1).laySo();
-            donthuc = new Donthuc(so, mu1);
-            dathuc.suaDonthuc(dathuc.layDodai() - 1, donthuc);
+      // vì ô đầu tiên là rỗng nên thêm 1 đơn thức vào
+      dathuc.themDonthuc(donthuc);
+      for (i = 0; i < dathuc1.layDodai(); i++) {
+         if (dathuc1.layDonthuc(i).layMu() > dathuc.layDonthuc(dathuc.layDodai() - 1).layMu()) {
+            donthuc = dathuc1.layDonthuc(i);
+            dathuc.themDonthuc(donthuc);
          } else {
-            so = dathuc1.layDonthuc(i + 1).laySo();
-            donthuc = new Donthuc(so, mu2);
-            dathuc.themDonthuc(donthuc);
+            donthuc = dathuc.layDonthuc(dathuc.layDodai() - 1).congDonthuc(dathuc1.layDonthuc(i).laySo());
+            dathuc.suaDonthuc(dathuc.layDodai() - 1, donthuc);
          }
-         if (i == dathuc1.length - 1) {
-            dathuc.themDonthuc(donthuc);
+      }
+      for (i = 0; i < dathuc.layDodai(); i++) {
+         if (dathuc.layDonthuc(i).laySo() == 0) {
+            dathuc = dathuc.xoaDonthuc(i);
          }
-         i++;
       }
       return dathuc;
    }
 
    public Dathuc xoaDonthuc(int i) {
       Dathuc ketqua = new Dathuc();
-      ketqua.suaDonthuc(0, this.dsDonthuc[1]);
-      for (int j = 2; j < this.length; j++) {
+      for (int j = 0; j < this.length; j++) {
+         if (j == i) {
+            continue;
+         }
          ketqua.themDonthuc(this.layDonthuc(j));
       }
 
       return ketqua;
    }
 
-   public int[] minus(int[] dsDonthuc1, int[] dsDonthuc2) {
-      int i;
-      int length = Math.max(dsDonthuc1.length, dsDonthuc2.length);
-      int[] result = new int[length];
-      initArr(result);
-      for (i = 0; i < length; i++) {
-         result[i] = dsDonthuc1[i] - dsDonthuc2[i];
+   public Dathuc truDathuc(Dathuc dathuc2) {
+      float so = 0;
+      int mu = 0;
+      Dathuc dathuc1 = this;
+      Dathuc ketqua = new Dathuc();
+      dathuc2 = dathuc2.thugonDathuc();
+      Donthuc donthuc = new Donthuc();
+      int i, j;
+
+      for (i = 0; i < dathuc1.layDodai(); i++) {
+         donthuc = new Donthuc(dathuc1.layDonthuc(i));
+         ketqua.themDonthuc(donthuc);
       }
-      return result;
+
+      for (j = 0; j < dathuc2.layDodai(); j++) {
+         so = -dathuc2.layDonthuc(j).laySo();
+         mu = dathuc2.layDonthuc(j).layMu();
+         donthuc = new Donthuc(so, mu);
+         ketqua.themDonthuc(donthuc);
+      }
+      ketqua = ketqua.thugonDathuc();
+
+      return ketqua;
    }
 
-   public int[] muptiply(int[] dsDonthuc1, int[] dsDonthuc2) {
-      int i, j;
-      int length = dsDonthuc1.length + dsDonthuc2.length - 1;
-      int[] result = new int[length];
-      initArr(result);
-      for (i = 0; i < dsDonthuc1.length; i++) {
-         for (j = 0; j < dsDonthuc2.length; j++) {
-            result[i + j] = result[i + j] + dsDonthuc1[i] * dsDonthuc2[i];
+   public Dathuc nhandDathuc(Dathuc dathuc2) {
+      Dathuc ketqua = new Dathuc();
+      Donthuc donthuc = new Donthuc();
+      for (int i = 0; i < this.layDodai(); i++) {
+         for (int j = 0; j < dathuc2.layDodai(); j++) {
+            donthuc = this.layDonthuc(i).nhanDonthuc(dathuc2.layDonthuc(j));
+            ketqua.themDonthuc(donthuc);
          }
       }
-      return result;
-   }
-
-   public int[] initArr(int[] dsDonthuc) {
-      for (int i = 0; i < dsDonthuc.length; i++)
-         dsDonthuc[i] = 0;
-      return dsDonthuc;
+      ketqua = ketqua.thugonDathuc();
+      return ketqua;
    }
 
    // Cộng với đa thức(dathuc ) trả về 1 đa thức đã cộng
    public Dathuc CongDathuc(Dathuc dathuc2) {
-      Dathuc dathuc1 = this.thugonDathuc();
+      Dathuc dathuc1 = this;
       Dathuc ketqua = new Dathuc();
       dathuc2 = dathuc2.thugonDathuc();
-      int i = 0;
-      int j = 0;
+      Donthuc donthuc = new Donthuc();
+      int i, j;
+      for (i = 0; i < dathuc1.layDodai(); i++) {
+         donthuc = new Donthuc(dathuc1.layDonthuc(i));
+         ketqua.themDonthuc(donthuc);
+      }
 
-      i++;
-      while (true) {
-         if (dathuc1.layDonthuc(i).layMu() < dathuc2.layDonthuc(j).layMu()) {
-            ketqua.themDonthuc(dathuc1.layDonthuc(i));
-            i++;
-         }
-         if (dathuc1.layDonthuc(i).layMu() > dathuc2.layDonthuc(j).layMu()) {
-            ketqua.themDonthuc(dathuc1.layDonthuc(j));
-            j++;
-         }
-         if (dathuc1.layDonthuc(i).layMu() == dathuc2.layDonthuc(i).layMu()) {
-            j++;
-            i++;
-         }
-         break;
+      for (j = 0; j < dathuc2.layDodai(); j++) {
+         donthuc = new Donthuc(dathuc2.layDonthuc(j));
+         ketqua.themDonthuc(donthuc);
+      }
+      ketqua = ketqua.thugonDathuc();
+      return ketqua;
+   }
+
+   public Dathuc daohamDathuc() {
+      Dathuc ketqua = new Dathuc();
+      for (int i = 0; i < this.layDodai(); i++) {
+         ketqua.themDonthuc(this.layDonthuc(i).daohamDonthuc());
+      }
+      for (int i = 0; i < ketqua.layDodai(); i++) {
+         ketqua = ketqua.thugonDathuc();
       }
       return ketqua;
    }
@@ -208,18 +206,20 @@ public class Dathuc {
       for (int i = 0; i < this.length; i++) {
          ketqua += this.dsDonthuc[i] + " + ";
       }
+      if (ketqua.equals(""))
+         return "0";
       ketqua = ketqua.substring(0, ketqua.length() - 2);
+
       return ketqua;
    }
 
    public static void main(String[] args) throws Exception {
 
-      Dathuc dathuc = new Dathuc("4x+0x^0+42x^4");
-
-      dathuc = dathuc.thugonDathuc();
+      Dathuc dathuc = new Dathuc("1");
+      Dathuc dt = new Dathuc("x+2+2x5+3x^4");
+      dathuc = dathuc.nhandDathuc(dt);
       // dathuc = dathuc.Derivative();
       String asd = dathuc.toString();
-
       System.out.println(asd);
    }
 }

@@ -15,7 +15,6 @@ public class Donthuc {
    }
 
    public Donthuc(float so, int mu) {
-      System.out.println(mu);
       if (so == 0) {
          this.so = 0;
          this.mu = 0;
@@ -50,7 +49,12 @@ public class Donthuc {
          }
 
       } else {
-         so = Float.parseFloat(pt[0]);
+         if (pt[0].equals("")) {
+            so = 0;
+         } else {
+            so = Float.parseFloat(pt[0]);
+         }
+
          mu = 0;
       }
    }
@@ -96,7 +100,7 @@ public class Donthuc {
    public Donthuc nhanDonthuc(Donthuc donthuc) {
       int mu = this.mu;
       float so = this.so;
-      mu = mu * donthuc.layMu();
+      mu = mu + donthuc.layMu();
       so = so * donthuc.laySo();
       Donthuc ketqua = new Donthuc(so, mu);
       return ketqua;
@@ -143,7 +147,9 @@ public class Donthuc {
    }
 
    public static void main(String[] args) {
-      Donthuc dt = new Donthuc(0, -1);
+      Donthuc dt = new Donthuc(1, 1);
+      Donthuc dt2 = new Donthuc(1, 2);
+      dt = dt.nhanDonthuc(dt2);
       System.out.println(dt.toString());
    }
 }
